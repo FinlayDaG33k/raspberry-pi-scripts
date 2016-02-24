@@ -1,3 +1,5 @@
+## script by FinlayDaG33k under the MIT License ##
+
 import os 
 import RPi.GPIO as gpio
 import time
