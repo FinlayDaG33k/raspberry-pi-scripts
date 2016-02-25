@@ -42,11 +42,10 @@ while True:
         if ":" in host:
             temphost = ""
             temphost, tempport = host.split(":")
-            tempport = int(tempport)
         else: 
             temphost = host
             tempport = 80
-        pingstatus = check_ping(temphost, tempport)
+        pingstatus = check_ping(temphost, int(tempport))
         if pingstatus == False:
             print('[' + time.strftime("%d-%m-%Y %H:%M:%S") + '] ' + temphost + ' on port ' + tempport + ' seems to be unreachable!')
             host_up = "False"
