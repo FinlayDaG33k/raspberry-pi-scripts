@@ -47,7 +47,7 @@ while True:
             tempport = 80
         pingstatus = check_ping(temphost, int(tempport))
         if pingstatus == False:
-            print('[' + time.strftime("%d-%m-%Y %H:%M:%S") + '] ' + temphost + ' on port ' + tempport + ' seems to be unreachable!')
+            print('[' + time.strftime("%d-%m-%Y %H:%M:%S") + '] ' + str(temphost) + ' on port ' + str(tempport) + ' seems to be unreachable!')
             host_up = "False"
 
     if host_up == "False":
