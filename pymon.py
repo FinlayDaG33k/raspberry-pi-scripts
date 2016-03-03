@@ -1,21 +1,23 @@
-## script by FinlayDaG33k under the MIT License ##
-
 import os 
 import RPi.GPIO as gpio
 import time
 import socket
 
 ## set variables for the machine to ping and pin for the LED
-hostname = ['kandicraft.finlaydag33k.nl:25565','kandicraft.finlaydag33k.nl:80','www.finlaydag33k.nl']
+hostname = ['kandicraft.finlaydag33k.nl:25565','www.finlaydag33k.nl']
 led_pin = 37
+activity_led = 13
 
-## prepare the GPIO
+## prepare
 led_status = gpio.LOW
+activity_status = gpio.LOW
 gpio.setmode(gpio.BOARD)
 gpio.setup(led_pin, gpio.OUT, gpio.PUD_OFF, led_status)
+gpio.setup(activity_led, gpio.OUT, gpio.PUD_OFF, activity_status)
 
 ## PING FUNCTION GALORE!!
 def check_ping(host,port):
+    gpio.output(activity_led,gpio.HIGH)
     captive_dns_addr = ""
     host_addr = ""
     try:
@@ -30,30 +32,31 @@ def check_ping(host,port):
         s.close()
     except Exception as exc:
         return False
-
     return True
-
+    gpio.output(activity_led,gpio.LOW)
 	
 	
 ## Run the script itself infinitely
-while True:
-    host_up = ""
-    for host in hostname:
-        if ":" in host:
-            temphost = ""
-            temphost, tempport = host.split(":")
-        else: 
-            temphost = host
-            tempport = 80
-        pingstatus = check_ping(temphost, int(tempport))
-        if pingstatus == False:
-            print('[' + time.strftime("%d-%m-%Y %H:%M:%S") + '] ' + str(temphost) + ' on port ' + str(tempport) + ' seems to be unreachable!')
-            host_up = "False"
+try:
+    while True:
+        host_up = ""
+        for host in hostname:
+            if ":" in host:
+                temphost = ""
+                temphost, tempport = host.split(":")
+            else: 
+                temphost = host
+                tempport = 80
+            pingstatus = check_ping(temphost, int(tempport))
+            if pingstatus == False:
+                print('[' + time.strftime("%d-%m-%Y %H:%M:%S") + '] ' + str(temphost) + ' on port ' + str(tempport) + ' seems to be unreachable!')
+                host_up = "False"
 
-    if host_up == "False":
-        led_status = gpio.HIGH
-    else:
-        led_status = gpio.LOW
-    gpio.output(led_pin,led_status) # set the LED to it's proper position
-    time.sleep(10) # wait for 10 seconds to rerun the loop
-
+        if host_up == "False":
+            led_status = gpio.HIGH
+        else:
+            led_status = gpio.LOW
+        gpio.output(led_pin,led_status)
+        time.sleep(1)
+except KeyboardInterrupt:
+    gpio.cleanup()
